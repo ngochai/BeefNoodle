@@ -2,7 +2,7 @@ package net.phamngochai.beefnoodle;
 
 import java.util.ArrayList;
 
-import com.googlecode.toolkits.stardict.StarDict;
+import net.phamngochai.beefnoodle.dictionary.SunDict;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -17,7 +17,7 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
     
     private String TAG = "MainActivity";    
-    private StarDict dict = null;
+    private SunDict dict = null;
     private ArrayList<String> wordList = null;
     
     @Override
@@ -27,7 +27,7 @@ public class MainActivity extends Activity {
         //Log.i(TAG, Environment.getDataDirectory().getAbsolutePath());
         //dict = new StarDict(Environment.getDataDirectory().getAbsolutePath() +"/net.phamngochai.beefnoodle/dictd_anh-viet");
         if (dict == null) {
-            dict = new StarDict("/sdcard/data/net.phamngochai.beefnoodle/dictd_anh-viet");
+            dict = new SunDict("/sdcard/data/net.phamngochai.beefnoodle/dictd_anh-viet");
             wordList = dict.getWordList();
         }
     }

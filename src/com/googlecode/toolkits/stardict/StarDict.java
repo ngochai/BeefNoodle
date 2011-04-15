@@ -29,20 +29,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.googlecode.toolkits.stardict;
 
 import java.io.BufferedReader;
-import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
 
 
 public class StarDict {
     
-    RandomAccessFile index;
-    RandomAccessFile yaindex;
-    DictZipFile dz;
-    String dictname;
+    protected RandomAccessFile index;
+    protected RandomAccessFile yaindex;
+    protected DictZipFile dz;
+    protected String dictname;
     
     
     public StarDict() {
@@ -60,7 +58,7 @@ public class StarDict {
             this.dz = new DictZipFile(dictname+".dict.dz");
             this.yaindex = new RandomAccessFile(dictname+".yaidx","r");
             
-            //this.dz.runtest();
+            this.dz.runtest();
         }
         catch(FileNotFoundException e) {
             e.printStackTrace();
@@ -121,61 +119,6 @@ public class StarDict {
         return word;
     }
     
-    public ArrayList<String> getWordList() {
-        ArrayList<String> words = new ArrayList<String>();
-        long offset = 0;
-        int maxReadSize = 8192;
-        System.out.println("Total words: " + words.size());
-        byte [] buffer = new byte[maxReadSize];
-        int readSize = maxReadSize;
-        int wordStart;
-        StringBuffer word = new StringBuffer();
-        int pos;        
-        try {
-            wordStart = 0;
-            pos = 0;            
-            do {
-                this.index.seek(offset);
-                readSize = this.index.read(buffer);
-                //System.out.println(readSize);
-                if (readSize == -1)
-                    break;
-                do {
-                    //System.out.println("readSize " + readSize + " i " + i + " ws " + wordStart);
-                    if (buffer[pos] == '\0') {
-                        word.append(new String(buffer, wordStart, pos - wordStart, "UTF-8"));
-                        words.add(word.toString());
-                        //word.delete(0, word.length());
-                        //System.out.println(word);
-                        word = new StringBuffer();
-                        if (pos + 9 < readSize) {
-                            pos = wordStart = pos + 9;
-                        } else {
-                            //System.out.println("Breaking readSize " + readSize + " pos " + pos + " ws " + wordStart);
-                            pos = wordStart = pos + 9 - readSize;                            
-                            break;
-                        }
-                    } else {
-                        pos++;
-                        if (pos == readSize) {
-                            //System.out.println("Data in the tail readSize " + readSize + " pos " + pos + " ws " + wordStart);
-                            word.append(new String(buffer, wordStart, pos - wordStart, "UTF-8"));
-                            pos = wordStart = 0;
-                            break;
-                        }
-                    }
-                } while(pos < readSize);
-                offset += readSize;
-            } while (true);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Total words: " + words.size());
-        
-        return words;
-    }
-    
     public String getVersion() {
         try {
             BufferedReader br = new BufferedReader(new FileReader(this.dictname+".ifo"));
@@ -197,11 +140,11 @@ public class StarDict {
     /**
      * @param args
      */
-//    public static void main(String[] args) {
-//        StarDict dict = new StarDict();
-//        StringBuffer sb = new StringBuffer();
-//        //System.out.println(dict.getVersion());
-//        System.out.println(dict.getWord(400000, sb));
-//        //System.out.println(sb.toString());
-//    }
+    public static void main(String[] args) {
+        StarDict dict = new StarDict();
+        StringBuffer sb = new StringBuffer();
+        //System.out.println(dict.getVersion());
+        System.out.println(dict.getWord(400000, sb));
+        //System.out.println(sb.toString());
+    }
 }

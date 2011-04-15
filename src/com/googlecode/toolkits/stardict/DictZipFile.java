@@ -239,17 +239,15 @@ public class DictZipFile {
         byte [] buff = new byte[size];
         System.out.println(this.dictzip.read(buff));
         /* */
-        InflaterInputStream  gz = new InflaterInputStream(new ByteArrayInputStream(buff), new Inflater(true));
+        InflaterInputStream  gz = new InflaterInputStream(new ByteArrayInputStream(buff),
+                new Inflater(true));
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream(); 
         byte[] buf = new byte[1024]; 
-        int numRead = 0;
-        try {
-            while((numRead = gz.read(buf)) != -1) { 
-                byteStream.write(buf, 0, numRead); 
-            }
-        } catch (java.io.EOFException e) {
-            //e.printStackTrace();
-        }
+        int numRead = 0; 
+        while((numRead = gz.read(buf)) != -1) 
+        { 
+            byteStream.write(buf, 0, numRead); 
+        } 
         return byteStream.toByteArray(); 
     }
     

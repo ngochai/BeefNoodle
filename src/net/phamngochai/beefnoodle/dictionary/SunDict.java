@@ -16,7 +16,7 @@ public class SunDict extends StarDict {
         ArrayList<String> words = new ArrayList<String>();
         long offset = 0;
         int maxReadSize = 8192;
-        System.out.println("Total words: " + words.size());
+        //System.out.println("Total words: " + words.size());
         byte [] buffer = new byte[maxReadSize];
         int readSize = maxReadSize;
         int wordStart;
@@ -62,7 +62,7 @@ public class SunDict extends StarDict {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Total words: " + words.size());
+        //System.out.println("Total words: " + words.size());
         
         return words;
     }

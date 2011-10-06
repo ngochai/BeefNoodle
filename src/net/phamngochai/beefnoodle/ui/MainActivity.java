@@ -1,7 +1,10 @@
-package net.phamngochai.beefnoodle;
+package net.phamngochai.beefnoodle.ui;
 
 import java.util.ArrayList;
 
+import net.phamngochai.beefnoodle.R;
+import net.phamngochai.beefnoodle.R.id;
+import net.phamngochai.beefnoodle.R.layout;
 import net.phamngochai.beefnoodle.dictionary.SunDict;
 
 import android.app.Activity;
@@ -38,6 +41,8 @@ public class MainActivity extends Activity {
     private String dictLoc = null;
     private String storeLoc = null;
     
+    private boolean receiverRegistered = false;
+    
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,52 +54,41 @@ public class MainActivity extends Activity {
         storeLoc = settings.getString(STORAGE_LOCATION, null);
         Log.d(TAG, "storeLoc: " + storeLoc);
         if (storeLoc == null) {
-        	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        	builder.setMessage("You don't have any dictionary, do you want to download some from internet?")
-        	       .setCancelable(false)
-        	       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-        	           public void onClick(DialogInterface dialog, int id) {
-        	                
-        	           }
-        	       })
-        	       .setNegativeButton("No", new DialogInterface.OnClickListener() {
-        	           public void onClick(DialogInterface dialog, int id) {
-        	                MainActivity.this.finish();
-        	           }
-        	       });
-        	AlertDialog alert = builder.create();
-        	alert.show();
-        	Log.d(TAG, "AlertDialog created");
+        	showNoDictionaryDialog();
+        } else {
+        
+        
+	        dictLoc = settings.getString(DICT_LOCATION, null);
+	        if (dictLoc == null) {
+	        	
+	        }
+	        
+	        
+	        checkStorage();
+	        IntentFilter filterMediaMounted = new IntentFilter (Intent.ACTION_MEDIA_MOUNTED);
+	        IntentFilter filterMediaRemoved = new IntentFilter (Intent.ACTION_MEDIA_REMOVED);        
+	        mediaActionReceiver  = new BroadcastReceiver(){
+	            @Override
+	            public void onReceive(Context arg0, Intent intent) {
+	            	checkStorage();
+	            }
+	        };        
+	        registerReceiver(this.mediaActionReceiver, new IntentFilter(filterMediaMounted));
+	        registerReceiver(this.mediaActionReceiver, new IntentFilter(filterMediaRemoved));
+	        receiverRegistered = true;
+	        
+	//        if (dict == null) {
+	//            dict = new SunDict("/sdcard/data/net.phamngochai.beefnoodle/dictd_anh-viet");
+	//            wordList = dict.getWordList();
+	//        }
         }
-        
-        
-        dictLoc = settings.getString(DICT_LOCATION, null);
-        if (dictLoc == null) {
-        	
-        }
-        
-        
-        checkStorage();
-        IntentFilter filterMediaMounted = new IntentFilter (Intent.ACTION_MEDIA_MOUNTED);
-        IntentFilter filterMediaRemoved = new IntentFilter (Intent.ACTION_MEDIA_REMOVED);        
-        mediaActionReceiver  = new BroadcastReceiver(){
-            @Override
-            public void onReceive(Context arg0, Intent intent) {
-            	checkStorage();
-            }
-        };        
-        registerReceiver(this.mediaActionReceiver, new IntentFilter(filterMediaMounted));
-        registerReceiver(this.mediaActionReceiver, new IntentFilter(filterMediaRemoved));
-        
-//        if (dict == null) {
-//            dict = new SunDict("/sdcard/data/net.phamngochai.beefnoodle/dictd_anh-viet");
-//            wordList = dict.getWordList();
-//        }
     }
     
     @Override
     public void onStop() {
-    	unregisterReceiver(mediaActionReceiver);
+    	super.onStop();
+    	if (receiverRegistered)
+    		unregisterReceiver(mediaActionReceiver);
     }
     
     public void searchForWord(View view) {
@@ -129,6 +123,26 @@ public class MainActivity extends Activity {
             // to know is we can neither read nor write
             mExternalStorageAvailable = mExternalStorageWriteable = false;
         }
+    }
+    
+    
+    private void showNoDictionaryDialog() {
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    	builder.setMessage("You don't have any dictionary, do you want to download some from internet?")
+    	       .setCancelable(false)
+    	       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+    	           public void onClick(DialogInterface dialog, int id) {
+    	        	   Intent intent = new Intent(MainActivity.this, DownloadDictionaryActivity.class);
+    	               startActivityForResult(intent, 100000);
+    	           }
+    	       })
+    	       .setNegativeButton("No", new DialogInterface.OnClickListener() {
+    	           public void onClick(DialogInterface dialog, int id) {
+    	                finish();
+    	           }
+    	       });
+    	AlertDialog alert = builder.create();
+    	alert.show();    	
     }
     
 }

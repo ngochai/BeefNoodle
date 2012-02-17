@@ -37,7 +37,7 @@ public class DownloadDictionaryActivity extends ListActivity {
 	private static final String TAG = "DownloadDictionaryActivity";
 	private static final String DICTIONARY_LIST_URL = "http://phamngochai.net/beefnoodle/list.xml"; 
 	
-	ArrayList<HashMap<String, String>> mylist = new ArrayList<HashMap<String, String>>();
+	ArrayList<HashMap<String, String>> myList = new ArrayList<HashMap<String, String>>();
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,7 +58,8 @@ public class DownloadDictionaryActivity extends ListActivity {
     		return;
     	}
     	
-    	
+    	for (int i = 0; i < myList.size(); i++)
+    		myList.remove(i);    	
     	NodeList nodes = doc.getElementsByTagName("dictionary");
 
 		//fill in the list items from the XML document
@@ -71,12 +72,12 @@ public class DownloadDictionaryActivity extends ListActivity {
         	Log.d(TAG, "Description: " + e.getElementsByTagName("description").item(0).getTextContent());
         	map.put("License", e.getElementsByTagName("license").item(0).getTextContent());
         	Log.d(TAG, "License: " + e.getElementsByTagName("license").item(0).getTextContent());
-        	mylist.add(map);
+        	myList.add(map);
 		}
 
 		//Make a new listadapter
 		
-        ListAdapter adapter = new SimpleAdapter(this, mylist , R.layout.dictionarylistrow,
+        ListAdapter adapter = new SimpleAdapter(this, myList , R.layout.dictionarylistrow,
                         new String[] { "Name", "Description", "License" },
                         new int[] { R.id.dictionary_name, R.id.dictionary_description, R.id.dictionary_license });
 
